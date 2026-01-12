@@ -1,0 +1,45 @@
+BLUE ACADEMY - FeeCollect App
+==============================
+
+A mobile app for managing your sports coaching academy.
+
+
+WHAT IT DOES
+------------
+• Track students - names, contact info, batches
+• Collect fees - record monthly payments, track pending dues
+• Mark attendance - daily presence/absence tracking
+• Send reminders - WhatsApp/SMS payment reminders with one tap
+• Daily notifications - get reminded about pending payments
+• Export data - download reports as CSV files
+
+
+HOW TO USE
+----------
+1. Add your batches (e.g., "Morning Batch", "Evening Batch")
+2. Add students with their contact details
+3. When fee is due, add a fee entry for each student
+4. Mark it as "Paid" when they pay
+5. Use "Send Reminder" to message students with pending fees
+
+
+MAIN SCREENS
+------------
+• Dashboard - Quick overview of collections and pending amounts
+• Students - View and manage all students
+• Attendance - Mark daily attendance
+• Reports - View collection stats and export data
+• Settings - Set notification time, academy name, etc.
+
+
+NOTIFICATIONS
+-------------
+The app sends you a daily reminder (default: 9:00 AM) if there are 
+pending payments. You can change the time in Settings.
+
+
+DATA
+----
+All data is stored locally on your phone. Use "Export Data" in 
+Settings to backup your data as a CSV file.
+
