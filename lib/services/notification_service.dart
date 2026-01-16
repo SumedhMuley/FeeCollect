@@ -14,13 +14,21 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   
   bool _isInitialized = false;
+  
+  /// India timezone (IST +5:30 - Mumbai/Delhi)
+  static const String _indiaTimezone = 'Asia/Kolkata';
+  late tz.Location _indiaLocation;
 
   /// Initialize the notification service
   Future<void> initialize() async {
     if (_isInitialized) return;
     
-    // Initialize timezone
+    // Initialize timezone data
     tz_data.initializeTimeZones();
+    
+    // Set India timezone (IST +5:30) as the location for all scheduled notifications
+    _indiaLocation = tz.getLocation(_indiaTimezone);
+    tz.setLocalLocation(_indiaLocation);
     
     // Android settings
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -96,7 +104,7 @@ class NotificationService {
     await _notifications.show(id, title, body, details, payload: payload);
   }
 
-  /// Schedule a daily notification at a specific time
+  /// Schedule a daily notification at a specific time (in IST +5:30)
   Future<void> scheduleDailyReminder({
     required int hour,
     required int minute,
@@ -104,9 +112,10 @@ class NotificationService {
     // Cancel existing scheduled notifications first
     await _notifications.cancel(1);
     
-    final now = tz.TZDateTime.now(tz.local);
+    // Use India timezone (IST +5:30) for scheduling
+    final now = tz.TZDateTime.now(_indiaLocation);
     var scheduledDate = tz.TZDateTime(
-      tz.local,
+      _indiaLocation,
       now.year,
       now.month,
       now.day,

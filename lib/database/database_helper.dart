@@ -61,6 +61,8 @@ class DatabaseHelper {
         isActive INTEGER NOT NULL DEFAULT 1,
         sport TEXT,
         notes TEXT,
+        hasGym INTEGER NOT NULL DEFAULT 0,
+        hasDiet INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY (batchId) REFERENCES batches (id) ON DELETE SET NULL
       )
     ''');

@@ -12,6 +12,13 @@ class Student {
   final bool isActive;
   final String? sport; // Swimming, Cricket, etc.
   final String? notes;
+  final bool hasGym; // Whether student is availing gym - adds ₹500
+  final bool hasDiet; // Whether student is availing diet - adds ₹500
+
+  /// Base fee constant
+  static const int baseFee = 1500;
+  static const int gymFee = 500;
+  static const int dietFee = 500;
 
   Student({
     this.id,
@@ -26,7 +33,17 @@ class Student {
     this.isActive = true,
     this.sport,
     this.notes,
+    this.hasGym = false,
+    this.hasDiet = false,
   });
+
+  /// Calculate fee based on gym and diet options
+  static int calculateFee({bool hasGym = false, bool hasDiet = false}) {
+    int fee = baseFee;
+    if (hasGym) fee += gymFee;
+    if (hasDiet) fee += dietFee;
+    return fee;
+  }
 
   /// Create a copy with modified fields
   Student copyWith({
@@ -42,6 +59,8 @@ class Student {
     bool? isActive,
     String? sport,
     String? notes,
+    bool? hasGym,
+    bool? hasDiet,
   }) {
     return Student(
       id: id ?? this.id,
@@ -56,6 +75,8 @@ class Student {
       isActive: isActive ?? this.isActive,
       sport: sport ?? this.sport,
       notes: notes ?? this.notes,
+      hasGym: hasGym ?? this.hasGym,
+      hasDiet: hasDiet ?? this.hasDiet,
     );
   }
 
@@ -74,6 +95,8 @@ class Student {
       'isActive': isActive ? 1 : 0,
       'sport': sport,
       'notes': notes,
+      'hasGym': hasGym ? 1 : 0,
+      'hasDiet': hasDiet ? 1 : 0,
     };
   }
 
@@ -92,6 +115,8 @@ class Student {
       isActive: (map['isActive'] as int) == 1,
       sport: map['sport'] as String?,
       notes: map['notes'] as String?,
+      hasGym: (map['hasGym'] as int?) == 1,
+      hasDiet: (map['hasDiet'] as int?) == 1,
     );
   }
 

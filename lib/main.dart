@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/students/students_screen.dart';
 import 'screens/attendance/attendance_screen.dart';
@@ -7,35 +6,25 @@ import 'screens/reports/reports_screen.dart';
 import 'screens/settings/settings_screen.dart';
 import 'services/notification_service.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize services with error handling to prevent crashes
+  // Initialize notifications in background (non-blocking)
+  _initializeNotifications();
+  
+  runApp(const FeeCollectApp());
+}
+
+/// Initialize notification service in background
+Future<void> _initializeNotifications() async {
   try {
-    // Initialize notification service
     final notificationService = NotificationService();
     await notificationService.initialize();
     await notificationService.requestPermissions();
-    
-    // Load saved notification time from preferences
-    final prefs = await SharedPreferences.getInstance();
-    final hour = prefs.getInt('notification_hour') ?? 9;
-    final minute = prefs.getInt('notification_minute') ?? 0;
-    final enabled = prefs.getBool('notifications_enabled') ?? true;
-    
-    // Schedule daily reminder at saved time if enabled
-    if (enabled) {
-      await notificationService.scheduleDailyReminder(hour: hour, minute: minute);
-    }
-    
-    // Check and notify about pending fees on app start
-    await notificationService.checkAndNotifyPendingFees();
   } catch (e) {
-    // Ignore initialization errors - app will still work
-    debugPrint('Initialization error: $e');
+    // Silently handle initialization errors
+    debugPrint('Notification init error: $e');
   }
-  
-  runApp(const FeeCollectApp());
 }
 
 

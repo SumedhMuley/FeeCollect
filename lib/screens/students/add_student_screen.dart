@@ -21,7 +21,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   // Form controllers
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _schoolCollegeController = TextEditingController();
   final _guardianNameController = TextEditingController();
   final _guardianPhoneController = TextEditingController();
   final _feeController = TextEditingController();
@@ -34,15 +34,15 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   bool _isActive = true;
   bool _isLoading = false;
   bool _isSaving = false;
+  bool _hasGym = false;    // Gym subscription - adds ₹500
+  bool _hasDiet = false;   // Diet subscription - adds ₹500
   
   final List<String> _sports = [
     'Swimming',
     'Cricket',
     'Football',
-    'Tennis',
     'Badminton',
     'Basketball',
-    'Athletics',
     'Other',
   ];
 
@@ -58,7 +58,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _emailController.dispose();
+    _schoolCollegeController.dispose();
     _guardianNameController.dispose();
     _guardianPhoneController.dispose();
     _feeController.dispose();
@@ -77,7 +77,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         if (student != null) {
           _nameController.text = student.name;
           _phoneController.text = student.phone;
-          _emailController.text = student.email ?? '';
+          _schoolCollegeController.text = student.email ?? '';
           _guardianNameController.text = student.guardianName ?? '';
           _guardianPhoneController.text = student.guardianPhone ?? '';
           _feeController.text = student.monthlyFee.toString();
@@ -86,7 +86,12 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
           _selectedSport = student.sport;
           _joinDate = student.joinDate;
           _isActive = student.isActive;
+          _hasGym = student.hasGym;
+          _hasDiet = student.hasDiet;
         }
+      } else {
+        // Set default fee for new students
+        _updateFee();
       }
       
       setState(() {
@@ -103,6 +108,12 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
     }
   }
 
+  /// Update fee based on Gym and Diet selections
+  void _updateFee() {
+    final fee = Student.calculateFee(hasGym: _hasGym, hasDiet: _hasDiet);
+    _feeController.text = fee.toString();
+  }
+
   Future<void> _saveStudent() async {
     if (!_formKey.currentState!.validate()) return;
     
@@ -113,9 +124,9 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         id: widget.studentId,
         name: _nameController.text.trim(),
         phone: _phoneController.text.trim(),
-        email: _emailController.text.trim().isEmpty 
+        email: _schoolCollegeController.text.trim().isEmpty 
             ? null 
-            : _emailController.text.trim(),
+            : _schoolCollegeController.text.trim(),
         guardianName: _guardianNameController.text.trim().isEmpty 
             ? null 
             : _guardianNameController.text.trim(),
@@ -130,6 +141,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
         notes: _notesController.text.trim().isEmpty 
             ? null 
             : _notesController.text.trim(),
+        hasGym: _hasGym,
+        hasDiet: _hasDiet,
       );
       
       if (isEditing) {
@@ -235,12 +248,12 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   const SizedBox(height: 16),
                   
                   TextFormField(
-                    controller: _emailController,
+                    controller: _schoolCollegeController,
                     decoration: const InputDecoration(
-                      labelText: 'Email (Optional)',
-                      prefixIcon: Icon(Icons.email),
+                      labelText: 'School/College Name (Optional)',
+                      prefixIcon: Icon(Icons.school),
                     ),
-                    keyboardType: TextInputType.emailAddress,
+                    textCapitalization: TextCapitalization.words,
                   ),
                   const SizedBox(height: 24),
                   
@@ -359,6 +372,41 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                       prefixIcon: Icon(Icons.notes),
                     ),
                     maxLines: 3,
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Gym and Diet Options Section
+                  _buildSectionHeader(theme, 'Additional Services'),
+                  const SizedBox(height: 12),
+                  
+                  // Gym checkbox
+                  CheckboxListTile(
+                    title: const Text('Whether availing Gym'),
+                    subtitle: Text('Adds ₹${Student.gymFee} to monthly fee'),
+                    value: _hasGym,
+                    onChanged: (value) {
+                      setState(() {
+                        _hasGym = value ?? false;
+                        _updateFee();
+                      });
+                    },
+                    secondary: const Icon(Icons.fitness_center),
+                    controlAffinity: ListTileControlAffinity.trailing,
+                  ),
+                  
+                  // Diet checkbox
+                  CheckboxListTile(
+                    title: const Text('Diet'),
+                    subtitle: Text('Adds ₹${Student.dietFee} to monthly fee'),
+                    value: _hasDiet,
+                    onChanged: (value) {
+                      setState(() {
+                        _hasDiet = value ?? false;
+                        _updateFee();
+                      });
+                    },
+                    secondary: const Icon(Icons.restaurant_menu),
+                    controlAffinity: ListTileControlAffinity.trailing,
                   ),
                   const SizedBox(height: 16),
                   
